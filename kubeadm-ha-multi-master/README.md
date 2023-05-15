@@ -42,7 +42,7 @@ backend kubernetes-backend
 systemctl restart haproxy
 ```
 
-## On all kubernetes nodes (kmaster1, kmaster2, kworker1)
+## On all kubernetes nodes (kmaster1, kmaster2, kworker1, kworker2)
 ##### Disable Firewall
 ```
 ufw disable
