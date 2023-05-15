@@ -1,4 +1,4 @@
-# Set up a Highly Available Kubernetes Cluster using kubeadm
+# Set up a Highly Available Kubernetes Cluster using kubeadm and HAproxy
 Follow this documentation to set up a highly available Kubernetes cluster using __Ubuntu 20.04 LTS__.
 
 This documentation guides you in setting up a cluster with two master nodes, two worker nodes and a load balancer node using HAProxy.
