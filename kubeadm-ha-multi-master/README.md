@@ -91,7 +91,7 @@ Copy the commands to join other master nodes and worker nodes.
 kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://docs.projectcalico.org/v3.15/manifests/calico.yaml
 ```
 
-## Join other nodes to the cluster (kmaster2 & kworker1)
+## Join other nodes to the cluster (kmaster2 & kworker1, kworker2)
 > Use the respective kubeadm join commands you copied from the output of kubeadm init command on the first master.
 
 > IMPORTANT: You also need to pass --apiserver-advertise-address to the join command when you join the other master node.
