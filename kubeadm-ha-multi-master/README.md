@@ -1,30 +1,21 @@
 # Set up a Highly Available Kubernetes Cluster using kubeadm
 Follow this documentation to set up a highly available Kubernetes cluster using __Ubuntu 20.04 LTS__.
 
-This documentation guides you in setting up a cluster with two master nodes, one worker node and a load balancer node using HAProxy.
+This documentation guides you in setting up a cluster with two master nodes, two worker nodes and a load balancer node using HAProxy.
 
-## Vagrant Environment
+## Environment
 |Role|FQDN|IP|OS|RAM|CPU|
 |----|----|----|----|----|----|
 |Load Balancer|loadbalancer.example.com|172.16.16.100|Ubuntu 20.04|1G|1|
-|Master|kmaster1.example.com|172.16.16.101|Ubuntu 20.04|2G|2|
-|Master|kmaster2.example.com|172.16.16.102|Ubuntu 20.04|2G|2|
-|Worker|kworker1.example.com|172.16.16.201|Ubuntu 20.04|1G|1|
+|Master|kmaster1.example.com|10.0.1.24|Ubuntu 20.04|4G|2|
+|Master|kmaster2.example.com|10.0.1.100|Ubuntu 20.04|4G|2|
+|Worker|kworker1.example.com|10.0.1.162|Ubuntu 20.04|1G|1|
+|Worker|kworker2.example.com|10.0.1.5|Ubuntu 20.04|1G|1|
+|HAproxy|lb.example.com|10.0.1.5|Ubuntu 20.04|1G|1|
 
-> * Password for the **root** account on all these virtual machines is **kubeadmin**
+
 > * Perform all the commands as root user unless otherwise specified
 
-## Pre-requisites
-If you want to try this in a virtualized environment on your workstation
-* Virtualbox installed
-* Vagrant installed
-* Host machine has atleast 8 cores
-* Host machine has atleast 8G memory
-
-## Bring up all the virtual machines
-```
-vagrant up
-```
 
 ## Set up load balancer node
 ##### Install Haproxy
@@ -35,7 +26,7 @@ apt update && apt install -y haproxy
 Append the below lines to **/etc/haproxy/haproxy.cfg**
 ```
 frontend kubernetes-frontend
-    bind 172.16.16.100:6443
+    bind 10.0.1.5:6443
     mode tcp
     option tcplog
     default_backend kubernetes-backend
@@ -44,8 +35,8 @@ backend kubernetes-backend
     mode tcp
     option tcp-check
     balance roundrobin
-    server kmaster1 172.16.16.101:6443 check fall 3 rise 2
-    server kmaster2 172.16.16.102:6443 check fall 3 rise 2
+    server kmaster1 10.0.1.24:6443 check fall 3 rise 2
+    server kmaster2 10.0.1.100:6443 check fall 3 rise 2
 ```
 ##### Restart haproxy service
 ```
@@ -93,7 +84,7 @@ apt update && apt install -y kubeadm=1.19.2-00 kubelet=1.19.2-00 kubectl=1.19.2-
 ## On any one of the Kubernetes master node (Eg: kmaster1)
 ##### Initialize Kubernetes Cluster
 ```
-kubeadm init --control-plane-endpoint="172.16.16.100:6443" --upload-certs --apiserver-advertise-address=172.16.16.101 --pod-network-cidr=192.168.0.0/16
+kubeadm init --control-plane-endpoint="10.0.1.5:6443" --upload-certs --apiserver-advertise-address=10.0.1.24 --pod-network-cidr=192.168.0.0/16
 ```
 Copy the commands to join other master nodes and worker nodes.
 ##### Deploy Calico network
@@ -110,9 +101,8 @@ kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://docs.projectca
 On your host machine
 ```
 mkdir ~/.kube
-scp root@172.16.16.101:/etc/kubernetes/admin.conf ~/.kube/config
+scp root@10.0.1.24:/etc/kubernetes/admin.conf ~/.kube/config
 ```
-Password for root account is kubeadmin (if you used my Vagrant setup)
 
 ## Verifying the cluster
 ```
